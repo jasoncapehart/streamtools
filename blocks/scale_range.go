@@ -25,6 +25,7 @@ func ScaleRange(b *Block) {
     data := &avgData{X_scaled: 0.0}
     var rule *scaleRule
 
+    N := 0.0
     min := 0.0
     max := 0.0
 
@@ -56,26 +57,33 @@ func ScaleRange(b *Block) {
             if err != nil {
                 log.Println(err.Error())
             }
-            if x < min {
-                min = x
-            }
-            if x > max {
-                max = x
-            }
+            // Sidestep the cold start problem
+            if N == 0.0 {
+                min := x
+                max := x
+                data.X_prime = (scaled_max - scaled_min) / 2
+            } else {
+                if x < min {
+                    min = x
+                }
+                if x > max {
+                    max = x
+                }
 
-            max_val := getKeyValues(msg, rule.Max)[0].(json.Number)
-            scaled_max, err_max := max_val.Float64()
-            if err_max != nil {
-                log.Println(err.Error())
-            }
+                max_val := getKeyValues(msg, rule.Max)[0].(json.Number)
+                scaled_max, err_max := max_val.Float64()
+                if err_max != nil {
+                    log.Println(err.Error())
+                }
 
-            min_val := getKeyValues(msg, rule.Min)[0].(json.Number)
-            scaled_min, err_min := min_val.Float64()
-            if err_min != nil {
-                log.Println(err.Error())
-            }
+                min_val := getKeyValues(msg, rule.Min)[0].(json.Number)
+                scaled_min, err_min := min_val.Float64()
+                if err_min != nil {
+                    log.Println(err.Error())
+                }
 
-            data.X_prime = ((x - min) / (max - min)) * (scaled_max - scaled_min) + scaled_min
+                data.X_prime = ((x - min) / (max - min)) * (scaled_max - scaled_min) + scaled_min
+            }
         }
     }
 }
