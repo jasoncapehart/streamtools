@@ -26,8 +26,6 @@ func ScaleRange(b *Block) {
     var rule *scaleRule
 
     N := 0.0
-    min := 0.0
-    max := 0.0
 
     for {
         select {
@@ -84,6 +82,7 @@ func ScaleRange(b *Block) {
 
                 data.X_prime = ((x - min) / (max - min)) * (scaled_max - scaled_min) + scaled_min
             }
+            N++
         }
     }
 }
