@@ -137,7 +137,7 @@ func BuildLibrary() {
         },
         &BlockTemplate{
             BlockType:  "var",
-            RouteNames: []string{"set_rule", "get_ruel", "var"},
+            RouteNames: []string{"set_rule", "get_rule", "var"},
             Routine:    Var,
         },
         &BlockTemplate{
@@ -145,6 +145,11 @@ func BuildLibrary() {
 			RouteNames: []string{"set_rule", "get_rule"},
 			Routine:    LongHTTP,
 		},
+        &BlockTemplate{
+            BlockType: "scale_range",
+            RouteNames: []string{"set_rule", "get_rule", "x_scaled"},
+            Routine:    ScaleRange,
+        },
 	}
 
 	libraryList := []map[string]interface{}{}
