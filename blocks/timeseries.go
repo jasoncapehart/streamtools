@@ -1,14 +1,22 @@
 package blocks
 
+import "time"
+
 func Timeseries(b *Block) {
 
 	type tsRule struct {
 		NumSamples int
 		Key        string
+		Lag        int
+	}
+
+	type tsDataPoint struct {
+		Timestamp float64
+		Value     float64
 	}
 
 	type tsData struct {
-		Values []float64
+		Values []tsDataPoint
 	}
 
 	var rule *tsRule
@@ -30,7 +38,7 @@ func Timeseries(b *Block) {
 			}
 
 			unmarshal(ruleUpdate, rule)
-			data.Values = make([]float64, rule.NumSamples)
+			data.Values = make([]tsDataPoint, rule.NumSamples)
 
 		case msg := <-b.Routes["get_rule"]:
 			if rule == nil {
@@ -47,13 +55,20 @@ func Timeseries(b *Block) {
 			switch v := getKeyValues(msg, rule.Key)[0].(type) {
 			case float32:
 				val = float64(v)
-			case int: 
+			case int:
 				val = float64(v)
 			case float64:
 				val = v
 			}
 
-			data.Values = append(data.Values[1:], val)
+      lag := -time.Duration(rule.Lag)*time.Second
+      t := float64(time.Now().Add(lag).Unix())
+
+			d := tsDataPoint{
+				Timestamp: t,
+				Value:     val,
+			}
+			data.Values = append(data.Values[1:], d)
 		}
 	}
 }

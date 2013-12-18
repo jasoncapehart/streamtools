@@ -33,7 +33,7 @@ func ToFile(b *Block) {
 			w.Flush()
 
 		case msg := <-b.Routes["set_rule"]:
-			if rule == nil{
+			if rule == nil {
 				rule = &toFileRule{}
 			}
 
@@ -52,9 +52,6 @@ func ToFile(b *Block) {
 			} else {
 				marshal(msg, rule)
 			}
-		case msg := <-b.AddChan:
-			updateOutChans(msg, b)
-
 		case <-b.QuitChan:
 			quit(b)
 			return

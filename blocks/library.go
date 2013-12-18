@@ -2,7 +2,6 @@ package blocks
 
 import (
 	"encoding/json"
-	"log"
 )
 
 var (
@@ -14,7 +13,6 @@ var (
 type BlockLibrary map[string]*BlockTemplate
 
 func BuildLibrary() {
-	log.Println("building block library")
 	Library = make(map[string]*BlockTemplate)
 
 	templates := []*BlockTemplate{
@@ -56,6 +54,11 @@ func BuildLibrary() {
 			Routine:    Mask,
 		},
 		&BlockTemplate{
+			BlockType:  "unpack",
+			RouteNames: []string{"set_rule", "get_rule"},
+			Routine:    Unpack,
+		},
+		&BlockTemplate{
 			BlockType:  "sync",
 			RouteNames: []string{"set_rule", "get_rule"},
 			Routine:    Sync,
@@ -71,6 +74,11 @@ func BuildLibrary() {
 			Routine:    Post,
 		},
 		&BlockTemplate{
+			BlockType:  "get",
+			RouteNames: []string{"set_rule", "get_rule"},
+			Routine:    HTTPGet,
+		},
+		&BlockTemplate{
 			BlockType:  "date",
 			RouteNames: []string{"set_rule", "get_rule"},
 			Routine:    Date,
@@ -81,9 +89,14 @@ func BuildLibrary() {
 			Routine:    FromNSQ,
 		},
 		&BlockTemplate{
-			BlockType:  "pollS3",
-			RouteNames: []string{"set_rule", "poll_now"},
-			Routine:    PollS3,
+			BlockType:  "getS3",
+			RouteNames: []string{"set_rule", "get_rule"},
+			Routine:    GetS3,
+		},
+		&BlockTemplate{
+			BlockType:  "listS3",
+			RouteNames: []string{"set_rule", "get_rule"},
+			Routine:    ListS3,
 		},
 		&BlockTemplate{
 			BlockType:  "tofile",
@@ -140,7 +153,7 @@ func BuildLibrary() {
             RouteNames: []string{"set_rule", "get_rule", "var"},
             Routine:    Var,
         },
-        &BlockTemplate{
+		&BlockTemplate{
 			BlockType:  "longHTTP",
 			RouteNames: []string{"set_rule", "get_rule"},
 			Routine:    LongHTTP,
@@ -150,6 +163,11 @@ func BuildLibrary() {
             RouteNames: []string{"set_rule", "get_rule", "x_scaled"},
             Routine:    ScaleRange,
         },
+		&BlockTemplate{
+			BlockType:  "fromSQS",
+			RouteNames: []string{"set_rule", "get_rule"},
+			Routine:    FromSQS,
+		},
 	}
 
 	libraryList := []map[string]interface{}{}

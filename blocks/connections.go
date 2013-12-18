@@ -1,11 +1,12 @@
 package blocks
 
 import (
-	"encoding/json"
-	"log"
 	"time"
 )
 
+// Connection accepts the input from a block and outputs it to another block.
+// This block is a special case in that it requires an input and an output block
+// to be created.
 func Connection(b *Block) {
 	var last BMsg
 	var rate float64 // rate in messages per second of this block
@@ -27,18 +28,15 @@ func Connection(b *Block) {
 			rate = ((N-1.0)/N)*rate + (1.0/N)*dt
 			t = time.Now()
 		case query := <-b.Routes["last_message"]:
-			mj, err := json.Marshal(last)
-			if err != nil {
-				log.Println(err.Error())
+			rr, ok := query.(RouteResponse)
+			if ok {
+				rr.ResponseChan <- last
 			}
-			query.ResponseChan <- mj
 		case query := <-b.Routes["rate"]:
-			out := map[string]float64{"rate": rate}
-			mj, err := json.Marshal(out)
-			if err != nil {
-				log.Println(err.Error())
+			rr, ok := query.(RouteResponse)
+			if ok {
+				rr.ResponseChan <- map[string]float64{"rate": rate}
 			}
-			query.ResponseChan <- mj
 		case msg := <-b.AddChan:
 			updateOutChans(msg, b)
 		case <-b.QuitChan:

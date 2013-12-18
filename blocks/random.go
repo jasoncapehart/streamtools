@@ -28,7 +28,7 @@ func Random(b *Block) {
 	for {
 		select {
 		case r := <-b.Routes["set_rule"]:
-			unmarshal(r, &rule)
+			unmarshal(r, rule)
 			log.Println("recieved new Period", rule.Period)
 			c = time.Tick(time.Duration(rule.Period) * time.Second)
 		case msg := <-b.Routes["get_rule"]:
@@ -54,6 +54,10 @@ func Random(b *Block) {
 			idx0 := rand.Intn(len(options))
 			idx1 := rand.Intn(len(options))
 			Set(msg, "option", options[idx0])
+
+			if rand.Intn(10) > 5 {
+				Set(msg, "sometimes.dot.option", options[rand.Intn(5)])
+			}
 
 			var nestJson interface{}
 			nestJson = make(map[string]interface{})
